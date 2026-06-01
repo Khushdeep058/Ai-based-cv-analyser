@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import ScoreMeter from '../components/ScoreMeter';
-import { ArrowLeft, CheckCircle2, XCircle, GraduationCap, GitBranch, Link as LinkIcon, FileText, ChevronDown, ChevronUp, Check, X, Sparkles } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle,  GitBranch, Link as LinkIcon, FileText, ChevronDown, ChevronUp, Check, X, Sparkles } from 'lucide-react';
 
 const ResultsPage = () => {
   const location = useLocation();
