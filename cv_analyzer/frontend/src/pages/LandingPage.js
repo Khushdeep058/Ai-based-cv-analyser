@@ -520,7 +520,7 @@ const LandingPage = () => {
           <Link to="/" style={S.footerLogo}>SkillSync AI</Link>
           <ul style={S.footerLinks}>
             {['Privacy', 'Terms', 'Contact'].map(l => (
-              <li key={l}><a href="#" style={S.footerLink}>{l}</a></li>
+              <li key={l}><Link to="/" style={S.footerLink}>{l}</Link></li>
             ))}
           </ul>
           <div style={S.footerCopy}>© 2025 SkillSync AI</div>
