@@ -40,7 +40,14 @@ from controllers.llm_controller import llm_blueprint
 app = Flask(__name__)
 
 # Enable CORS so your React frontend (usually on port 5173) can communicate with Flask
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(
+    app,
+    resources={r"/*": {
+        "origins": [
+            "https://ai-based-cv-analyser.vercel.app"
+        ]
+    }}
+)
 
 # Ensure the temporary upload folder exists
 app.config['UPLOAD_FOLDER'] = 'temp_uploads'
