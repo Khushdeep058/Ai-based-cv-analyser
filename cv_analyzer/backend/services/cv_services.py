@@ -214,25 +214,31 @@ def extract_and_analyze_cv(filepath: str, job_description: str = "") -> Dict[str
         
         extracted_github = github_match.group(1) if github_match else ""
         extracted_linkedin = f"[https://linkedin.com/in/](https://linkedin.com/in/){linkedin_match.group(1)}" if linkedin_match else ""
-
+        
         embedded_uris = extract_uris_from_pdf(filepath)
+
         for uri in embedded_uris:
             if not extracted_github:
                 g_match = re.search(r'github\.com/([a-zA-Z0-9-]+)', uri, re.IGNORECASE)
-                if g_match: extracted_github = g_match.group(1)
+                if g_match:
+                    extracted_github = g_match.group(1)
+
             if not extracted_linkedin:
                 l_match = re.search(r'linkedin\.com/in/([a-zA-Z0-9-]+)', uri, re.IGNORECASE)
-                if l_match: extracted_linkedin = f"[https://linkedin.com/in/](https://linkedin.com/in/){l_match.group(1)}"
-     print("=" * 50)
-     print("Embedded URIs:", embedded_uris)
-     print("Extracted GitHub:", extracted_github)
-     print("Extracted LinkedIn:", extracted_linkedin)
-     print("=" * 50)
+                if l_match:
+                    extracted_linkedin = f"[https://linkedin.com/in/](https://linkedin.com/in/){l_match.group(1)}"
+
+        print("=" * 50)
+        print("Embedded URIs:", embedded_uris)
+        print("Extracted GitHub:", extracted_github)
+        print("Extracted LinkedIn:", extracted_linkedin)
+        print("=" * 50)
+
         skills_data = extract_skills_dynamically(job_description, clean_text) or {}
         benchmark_skills = skills_data.get("benchmark_skills", [])
         matched_skills = skills_data.get("matched_skills", [])
         skill_gaps = skills_data.get("skill_gaps", [])
-       
+        
         analysis_results = calculate_score_and_gaps(
             benchmark_skills, matched_skills, skill_gaps,
             job_description, clean_text, embedded_uris, resume_sections
