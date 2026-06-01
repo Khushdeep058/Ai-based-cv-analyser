@@ -228,7 +228,11 @@ def extract_and_analyze_cv(filepath: str, job_description: str = "") -> Dict[str
         benchmark_skills = skills_data.get("benchmark_skills", [])
         matched_skills = skills_data.get("matched_skills", [])
         skill_gaps = skills_data.get("skill_gaps", [])
-        
+        print("=" * 50)
+        print("Embedded URIs:", embedded_uris)
+        print("Extracted GitHub:", extracted_github)
+        print("Extracted LinkedIn:", extracted_linkedin)
+        print("=" * 50)
         analysis_results = calculate_score_and_gaps(
             benchmark_skills, matched_skills, skill_gaps,
             job_description, clean_text, embedded_uris, resume_sections
