@@ -6,12 +6,17 @@ from services.llm_github_evaluator import evaluate_github_profile_with_llm
 
 def fetch_github_metrics(username):
     """Fetches public repository data from GitHub."""
+    print("=" * 50)
+    print("GitHub username received:", username)
+    print("=" * 50)
     if not username:
         return {"github_score": 0, "top_language": "N/A", "total_repos": 0}
 
     try:
         url = f"https://api.github.com/users/{username}/repos?per_page=100"
         response = requests.get(url)
+        print("GitHub API URL:", url)
+        print("GitHub Status Code:", response.status_code)
         
         if response.status_code != 200:
             return {"github_score": 0, "top_language": "Not Found", "total_repos": 0}
