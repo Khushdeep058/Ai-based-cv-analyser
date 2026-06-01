@@ -4,6 +4,8 @@ import axios from 'axios';
 import Dropzone from '../components/Dropzone';
 import { Loader2 } from 'lucide-react';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
@@ -34,9 +36,13 @@ const Dashboard = () => {
     }
     
     try {
-      const response = await axios.post('http://localhost:5001/api/cv/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const response = await axios.post(
+  `${API_URL}/api/cv/upload`,
+  formData,
+  {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }
+);
       
       if (response.data.status === 'success') {
         navigate('/results', { state: { analysisData: response.data.data } });
