@@ -36,13 +36,28 @@ def evaluate_linkedin_profile_with_llm(linkedin_content, cv_data=None):
 
     prompt = f"""
     You are an expert LinkedIn Brand Strategist. 
-    Analyze this LinkedIn profile content against these strictly forbidden features and cross-reference with their resume (if provided).
+    Analyze the following LinkedIn profile content and cross-reference with their resume (if provided). Your analysis must be STRICTLY PERSONALIZED to the actual text provided. Do NOT use generic examples or hallucinate feedback.
+
+    SCORING RUBRIC (Calculate out of 100 Points):
     
-    1. PASSION TRAP: If the headline uses "Passionate", "Aspiring", or "Motivated", flag it as a disqualifier.
-    2. HUMANITY CHECK: Does the 'About' section sound like a resume or a human? If it is overly perfect, robotic, or uses "I am a dedicated professional", suggest rewriting to be a story.
-    3. CONTEXTUAL TITLES: If job titles are generic, suggest adding "The Impact" (e.g., "AI Engineer who reduced latency by 30%").
-    4. GHOST PROFILE: Look for lack of recent posts or engagement.
-    5. DESPERATION: Look for "Open to Work" banner text or begging.
+    1. Discoverability & SEO (35 Points)
+       - Headline Keyword Density (+15 pts): Does the headline contain exact hard skills (e.g., Python, React) and a clear target role, rather than just "Student" or "Enthusiast"?
+       - Skills Section Alignment (+10 pts): Are the skills listed highly relevant to their target industry?
+       - Clean Architecture (+10 pts): Do they have a customized LinkedIn URL and accessible contact information?
+
+    2. Credibility & Impact (35 Points)
+       - Metric-Driven Experience (+20 pts): Scan the Experience or Projects section. Award points ONLY if it finds numbers, percentages, or concrete business impacts (e.g., "Achieved 97% accuracy" or "Decreased latency by 50ms"). Generic responsibilities get 0 points.
+       - Rich Media / Links (+15 pts): Are there links to GitHub repositories, portfolios, or live project deployments? Proof of work is highly valued.
+
+    3. Personal Brand Narrative (30 Points)
+       - The "Human" About Section (+30 pts): Award full points if the summary is written in the first person ("I"), tells a brief story about why they build things, and avoids robotic, cliché jargon. Subtract points if it reads like a dry copy-paste of a resume summary. (Note: Total is 100 pts: 35+35+30=100)
+
+    4. The "Red Flag" Multiplier (Pass/Fail Checks)
+       - The Desperation Cap: If you detect "Actively seeking," "Desperate for," "Open to Work", or an empty profile, the maximum possible score drops to 50/100, regardless of how good their keywords are.
+
+    Calculate the total `linkedin_score` based strictly on this rubric.
+
+    CRITICAL INSTRUCTION: Your critiques, quick fixes, red flags, and green flags MUST refer ONLY to the exact content found in the provided profile. Do NOT make up examples. Do NOT hallucinate metrics or job titles that aren't in their profile.
 
     --- LINKEDIN PROFILE CONTENT ---
     {linkedin_content}
@@ -50,8 +65,9 @@ def evaluate_linkedin_profile_with_llm(linkedin_content, cv_data=None):
 
     Return your response strictly as a JSON object with this exact format:
     {{
-        "linkedin_score": <int 0-100>,
-        "profile_status": "<Brief status, e.g., 'Analyzed successfully', 'Needs Major Overhaul'>",
+        "linkedin_score": 85,
+        "profile_status": "<Brief status, e.g., 'Analyzed successfully'>",
+        "connections": "<Extracted connections if found, else '500+'>",
         "headline_critique": "<Specific critique of their headline>",
         "about_critique": "<Specific critique of their about section>",
         "activity_recommendation": "<Specific critique of their activity or ghost status>",
@@ -73,8 +89,17 @@ def evaluate_linkedin_profile_with_llm(linkedin_content, cv_data=None):
         )
         
         raw_output = response.choices[0].message.content
-        raw_output = raw_output.replace('```json', '').replace('```', '').strip()
-        result = json.loads(raw_output)
+        
+        # Safer JSON cleaning block
+        raw_output = raw_output.strip()
+        if raw_output.startswith("```json"):
+            raw_output = raw_output[7:]
+        elif raw_output.startswith("```"):
+            raw_output = raw_output[3:]
+        if raw_output.endswith("```"):
+            raw_output = raw_output[:-3]
+            
+        result = json.loads(raw_output.strip())
         
         # Ensure connections is present for frontend formatting
         result["connections"] = result.get("connections", "500+")
