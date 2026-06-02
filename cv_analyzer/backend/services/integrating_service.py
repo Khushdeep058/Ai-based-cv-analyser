@@ -1,8 +1,10 @@
 # services/integrating_service.py
 import requests
 import re
+import os
 from bs4 import BeautifulSoup
 from services.llm_github_evaluator import evaluate_github_profile_with_llm
+from services.llm_linkedin_evaluator import evaluate_linkedin_profile_with_llm
 
 def fetch_github_metrics(username):
     """Fetches public repository data from GitHub."""
@@ -14,9 +16,19 @@ def fetch_github_metrics(username):
 
     try:
         url = f"https://api.github.com/users/{username}/repos?per_page=100"
-        response = requests.get(url)
+        headers = {
+            "Authorization": f"Bearer {os.getenv('GITHUB_TOKEN')}",
+            "Accept": "application/vnd.github+json"
+        }
+
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=10
+        )
         print("GitHub API URL:", url)
         print("GitHub Status Code:", response.status_code)
+        print("GitHub Response:", response.text[:500])
         
         if response.status_code != 200:
             return {"github_score": 0, "top_language": "Not Found", "total_repos": 0}
@@ -104,9 +116,6 @@ def fetch_github_metrics(username):
         print(f"Error fetching GitHub metrics: {e}")
         return {"github_score": 0, "top_language": "Error", "total_repos": 0}
 
-
-from services.llm_linkedin_evaluator import evaluate_linkedin_profile_with_llm
-import os
 
 def fetch_linkedin_metrics(linkedin_url, linkedin_content, cv_data=None):
     """
