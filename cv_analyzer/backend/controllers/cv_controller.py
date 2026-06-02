@@ -41,7 +41,7 @@ def parse_cv():
         # Fetch GitHub Metrics (Always mock/fetch via URL if present)
         github_url = request.form.get('github_url', '')
         final_github_url = github_url if github_url else ai_data.get("extracted_github", "")
-        print("EXTRACTED GITHUB =", analysis_results.get("extracted_github"))
+        print("EXTRACTED GITHUB =", ai_data.get("extracted_github"))
         github_data = fetch_github_metrics(final_github_url.split("github.com/")[-1] if "github.com/" in final_github_url else final_github_url)
         
         # Fetch LinkedIn Metrics (Hybrid: Third-Party API with LLM Fallback)
